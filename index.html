@@ -54,6 +54,16 @@
             color: white;
             background-color: #37475A;
             }
+            .card-body {
+                color: black;
+            }
+
+            #delete-btn {
+                position: absolute;
+                bottom: 2%;
+                left: 70%;
+                z-index: 2;
+            }
             </style>
         </head>
         
@@ -61,72 +71,83 @@
         
            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                 <a class="navbar-brand" href="#">Amazon Webshop</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
-                    aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="collapse navbar-collapse" id="navbar">
                     <div class="navbar-nav">
                         <a class="nav-link active" href="file:///Users/roosavuotso/Desktop/Strive/M3D8/index.html">Home <span class="sr-only">(current)</span></a>
                         <a class="nav-link" href="file:///Users/roosavuotso/Desktop/Strive/M3D8/backoffice.html">Backoffice</a>
                     </div>
                 </div>
             </nav>
-            <div class="container">
+            <div class="container form-container">
                 <div class="row justify-content-center">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <h2 class="mt-5 mb-3">Products</h2>
-                        <ul id="products" class="list-group">
-        
-                        </ul>
+                            <div class="container" id="allProduct">
+                                <div class="row">
+
+                                </div>
                     </div>
                 </div>
             </div>
-            <div class="container">
-                <div class="row">
-                </div>
-            </div>
-            <script>
-        
-                const getEvents = async (url) => {
-        
-                    const response = await fetch("https://striveschool-api.herokuapp.com/api/product/", { 
-                        headers: {
-"Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTFkMGMxMTJkNTI2MjAwMTViNmRkMGMiLCJpYXQiOjE2MjkyOTM1ODUsImV4cCI6MTYzMDUwMzE4NX0.DiQ8vcl9fM1k-p1352iy8XiWvbIwvmM_d9yVRtKveNE"
-}
-})
-                    const events = await response.json()
-                    return events
-        
-                }
-        
-                const displayEvents = (events) => {
-                    const ul = document.getElementById("products")
-        
-        
-                    if (events.length > 0) {
-                        events.forEach(event => {
-                            const li = document.createElement("li")
-                            li.classList.add("list-group-item", "d-flex")
-        
-                            li.innerHTML = `<span>${event.name}</span><span class="badge badge-dark d-flex align-items-center ml-auto mr-2">${event.price}€</span><a href="./detail.html?id=${event._id}">VIEW DETAILS</a>`
-        
-                            ul.appendChild(li)
-                        })
+         </div>
+            
+    <script> 
+
+const getAllProducts = async () => {
+            const url = "https://striveschool-api.herokuapp.com/api/product/"
+            try {
+                const response = await fetch (url, {
+                    method: "GET",
+                    headers: {
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MTFkMGMxMTJkNTI2MjAwMTViNmRkMGMiLCJpYXQiOjE2MjkyOTM1ODUsImV4cCI6MTYzMDUwMzE4NX0.DiQ8vcl9fM1k-p1352iy8XiWvbIwvmM_d9yVRtKveNE",
                     }
-                }
-        
-                window.onload = async () => {
-                    const url = "https://striveschool-api.herokuapp.com/api/product/"
-                    try {
-                        const events = await getEvents(url)
-                        displayEvents(events)
-                    } catch (err) {
-                        console.error(err.message)
-                    }
-        
-                }
-        
+                })
+
+                const allProducts = await response.json()
+                console.log(allProducts)
+
+                return allProducts
+            } catch (error) {
+                console.log(error)
+            }finally{
+                console.log("Products uploaded successfully")
+            }
+        }
+
+        window.onload = async () =>{
+            const allProducts = await getAllProducts()
+
+            displayProduct(allProducts)
+        }
+
+        const displayProduct = (products) => {
+            let displayProductContainer = document.querySelector("#allProduct .row")
+            
+            products.forEach(product =>{
+             
+                displayProductContainer.innerHTML += 
+                `<div class="card col-sm-4 col-lg-2">
+                <img class="card-img-top" src="${product.imageUrl}" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">${product.name}</h5>
+                    <h6 class="card-text">Brand: ${product.brand}</h6>
+                    <p class="card-text">Price: ${product.description}</p>
+                    <p class="card-text">Price: ${product.price}</p>
+                    <button id="delete-btn" type="button" class="btn btn-danger" onclick="deleteProduct()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white"
+                                class="bi bi-trash" viewBox="0 0 16 16">
+                                <path
+                                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                <path fill-rule="evenodd"
+                                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                            </svg>
+                        </button>
+                  </div>
+            </div>`
+                
+        })
+     }
+
             </script>
         
             <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
